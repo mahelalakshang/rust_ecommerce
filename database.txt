@@ -1,3 +1,7 @@
+
+-- connect to db
+sudo -u postgres psql
+
 -- List all databases
 \l
 -- Connect to your database

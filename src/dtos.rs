@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -40,4 +41,24 @@ pub struct PostResponse {
     pub title: String,
     pub body: String,
     pub created_at: DateTime<Utc>,
+}
+
+// Product Dto
+#[derive(Debug, Deserialize)]
+pub struct CreateProductRequest {
+    pub name: String,
+    pub description: String,
+    pub category_id: Uuid,
+    pub price: f64,
+    pub stock_quantity: i32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ProductResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub category_id: Uuid,
+    pub price: Decimal,
+    pub stock_quantity: i32,
 }
