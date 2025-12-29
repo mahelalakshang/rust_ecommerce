@@ -10,6 +10,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod config;
 mod dtos;
 mod error;
+mod grpc_client;
 mod model;
 mod utils;
 mod web;

@@ -27,10 +27,22 @@ pub async fn create_product(
     .fetch_one(&state.db_pool)
     .await?;
 
+    // Send notification to the notification service
+    let notification_result = crate::grpc_client::send_product_notification(
+        &user_id.to_string(),
+        &product.name,
+    )
+    .await;
+
+    // Log if notification fails, but don't fail the product creation
+    if let Err(e) = notification_result {
+        tracing::warn!("Failed to send notification: {}", e);
+    }
+
     Ok(Json(ProductResponse {
         id: product.id,
         category_id: product.category_id,
-        name: product.name,
+        name: product.name.clone(),
         description: product.description,
         price: product.price,
         stock_quantity: product.stock_quantity,

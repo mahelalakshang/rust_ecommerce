@@ -1,0 +1,15 @@
+[package]
+name = "notification"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { workspace = true }
+tonic = { workspace = true }
+prost = { workspace = true }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+chrono = "0.4"
+
+[build-dependencies]
+tonic-build = "0.12"
