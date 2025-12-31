@@ -6,13 +6,14 @@ pub mod notification {
 }
 
 use notification::{
-    ProductNotificationRequest, notification_service_client::NotificationServiceClient,
+    notification_service_client::NotificationServiceClient, ProductNotificationRequest,
 };
 
 /// Send a product notification to the notification service
 pub async fn send_product_notification(
     user_id: &str,
     product_name: &str,
+    username: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Connect to the notification service
     let channel = Channel::from_static("http://localhost:50051")
@@ -24,6 +25,7 @@ pub async fn send_product_notification(
     let request = tonic::Request::new(ProductNotificationRequest {
         user_id: user_id.to_string(),
         name: product_name.to_string(),
+        username: username.to_string(),
     });
 
     let response = client.send_product_notification(request).await?;

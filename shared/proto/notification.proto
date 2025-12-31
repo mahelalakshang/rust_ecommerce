@@ -6,6 +6,7 @@ package notification;
 message ProductNotificationRequest {
     string user_id = 1;
     string name = 2;
+    string username=3;
 }
 
 // Response message for product notification

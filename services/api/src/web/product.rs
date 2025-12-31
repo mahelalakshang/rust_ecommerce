@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use axum::{Extension, Json, extract::State};
+use axum::{extract::State, Extension, Json};
 
 use crate::{
     config::Config,
     dtos::{CreateProductRequest, ProductResponse},
     error::AppError,
-    model::Product,
+    model::{Product, User},
 };
 use uuid::Uuid;
 
@@ -27,10 +27,19 @@ pub async fn create_product(
     .fetch_one(&state.db_pool)
     .await?;
 
+    let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1")
+        .bind(&user_id)
+        .fetch_optional(&state.db_pool)
+        .await?
+        .ok_or(AppError::BadRequest("User not found".to_string()))?;
+
+    println!("{:#?}", user.username);
+
     // Send notification to the notification service
     let notification_result = crate::grpc_client::send_product_notification(
         &user_id.to_string(),
         &product.name,
+        &user.username,
     )
     .await;
 

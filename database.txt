@@ -22,3 +22,6 @@ cargo run --bin setup_db
 
 --create migration
 sqlx migrate add products
+
+cargo run --bin notification
+cargo run -p my_rest

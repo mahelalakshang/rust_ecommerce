@@ -25,6 +25,7 @@ impl NotificationService for NotificationServiceImpl {
         println!("📢 NOTIFICATION RECEIVED:");
         println!("   User ID: {}", req.user_id);
         println!("   Product Name: {}", req.name);
+        println!("   Username: {}", req.username);
         println!("   Timestamp: {}", chrono::Utc::now());
         println!("---");
 
