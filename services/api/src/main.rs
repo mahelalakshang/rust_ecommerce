@@ -1,7 +1,7 @@
 use axum::{
-    Router,
     middleware::from_fn_with_state,
     routing::{get, post},
+    Router,
 };
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -54,7 +54,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Product Routes (Protected)
     let product_routes = Router::new()
-        .route("/", post(product_handler::create_product))
+        .route(
+            "/",
+            post(product_handler::create_product).get(product_handler::get_products),
+        )
         .route_layer(from_fn_with_state(state.clone(), mw::auth_guard));
 
     // Combine Routes

@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
-use axum::{extract::State, Extension, Json};
+use axum::{
+    extract::{Query, State},
+    Extension, Json,
+};
 
 use crate::{
     config::Config,
-    dtos::{CreateProductRequest, ProductResponse},
+    dtos::{CreateProductRequest, PaginationRequest, ProductResponse},
     error::AppError,
     model::{Product, User},
 };
@@ -56,4 +59,34 @@ pub async fn create_product(
         price: product.price,
         stock_quantity: product.stock_quantity,
     }))
+}
+
+pub async fn get_products(
+    State(state): State<Arc<Config>>,
+    Query(pagination): Query<PaginationRequest>,
+) -> Result<Json<Vec<ProductResponse>>, AppError> {
+    let limit = pagination.limit.unwrap_or(10);
+    let offset = pagination.offset.unwrap_or(0);
+
+    let products = sqlx::query_as::<_, Product>(
+        "SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+    )
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let response = products
+        .into_iter()
+        .map(|p| ProductResponse {
+            id: p.id,
+            category_id: p.category_id,
+            name: p.name,
+            description: p.description,
+            price: p.price,
+            stock_quantity: p.stock_quantity,
+        })
+        .collect();
+
+    Ok(Json(response))
 }
