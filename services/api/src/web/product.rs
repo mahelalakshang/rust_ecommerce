@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Query, State},
+    extract::{Path, Query, State},
     Extension, Json,
 };
 
@@ -89,4 +89,24 @@ pub async fn get_products(
         .collect();
 
     Ok(Json(response))
+}
+
+pub async fn get_product_by_id(
+    State(state): State<Arc<Config>>,
+    Path(id): Path<Uuid>,
+) -> Result<Json<ProductResponse>, AppError> {
+    let product = sqlx::query_as::<_, Product>("SELECT * FROM products WHERE id = $1")
+        .bind(&id)
+        .fetch_optional(&state.db_pool)
+        .await?
+        .ok_or(AppError::BadRequest("Product not found".to_string()))?;
+
+    Ok(Json(ProductResponse {
+        id: product.id,
+        category_id: product.category_id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock_quantity: product.stock_quantity,
+    }))
 }

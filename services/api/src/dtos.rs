@@ -62,3 +62,16 @@ pub struct ProductResponse {
     pub price: Decimal,
     pub stock_quantity: i32,
 }
+
+//Category Dto
+#[derive(Debug, Deserialize)]
+pub struct CreateCategoryRequest {
+    pub name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CategoryResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub created_at: DateTime<Utc>,
+}

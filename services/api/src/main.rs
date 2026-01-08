@@ -16,7 +16,9 @@ mod utils;
 mod web;
 
 use config::Config;
-use web::{auth, mw, post as post_handler, product as product_handler};
+use web::{
+    auth, category as category_handler, mw, post as post_handler, product as product_handler,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -58,6 +60,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "/",
             post(product_handler::create_product).get(product_handler::get_products),
         )
+        .route("/{id}", get(product_handler::get_product_by_id))
+        .route_layer(from_fn_with_state(state.clone(), mw::auth_guard));
+
+    //Category Routes
+    let category_routes = Router::new()
+        .route("/", post(category_handler::create_category))
         .route_layer(from_fn_with_state(state.clone(), mw::auth_guard));
 
     // Combine Routes
@@ -65,6 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nest("/auth", auth_routes)
         .nest("/posts", post_routes)
         .nest("/products", product_routes)
+        .nest("/categories", category_routes)
         .with_state(state);
 
     // Start Server
